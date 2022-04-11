@@ -8,7 +8,7 @@ pub mod sol_tweeter {
 
     pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
         let blog_account = &mut ctx.accounts.blog_account;
-        blog_account.owner = *ctx.accounts.signer.key;
+        blog_account.author = *ctx.accounts.signer.key;
         Ok(())
     }
 
@@ -21,7 +21,7 @@ pub mod sol_tweeter {
 
         tweet.title = title;
         tweet.content = content;
-        tweet.owner = author.key();
+        tweet.author = author.key();
         tweet.timestamp = clock.unix_timestamp;
 
         let tweet_pubkey = tweet.key();
@@ -63,14 +63,15 @@ pub struct PostTweet<'info> {
 
 #[derive(Accounts)]
 pub struct EditTweet<'info> {
-    #[account(mut)]
+    #[account(mut,has_one=author)]
     pub tweet: Account<'info, Tweet>,
+    pub author: Signer<'info>,
 }
 
 #[account]
 pub struct BlogAccount {
     pub address: Pubkey,
-    pub owner: Pubkey,
+    pub author: Pubkey,
     pub tweets: Vec<Pubkey>,
 }
 
@@ -78,6 +79,6 @@ pub struct BlogAccount {
 pub struct Tweet {
     pub title: String,
     pub content: String,
-    pub owner: Pubkey,
+    pub author: Pubkey,
     pub timestamp: i64,
 }

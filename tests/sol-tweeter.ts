@@ -71,6 +71,7 @@ describe("sol-tweeter", () => {
       {
         accounts: {
           tweet: tweet_account.publicKey,
+          author: provider.wallet.publicKey,
         },
       }
     );
