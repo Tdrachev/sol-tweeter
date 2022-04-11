@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-
+use Clock;
 declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 
 #[program]
@@ -30,6 +30,15 @@ pub mod sol_tweeter {
 
         Ok(())
     }
+
+    pub fn edit_tweet(ctx: Context<EditTweet>, title: String, content: String) -> Result<()> {
+        let tweet_to_edit = &mut ctx.accounts.tweet;
+        let clock: Clock = Clock::get().unwrap();
+        tweet_to_edit.title = title;
+        tweet_to_edit.content = content;
+        tweet_to_edit.timestamp = clock.unix_timestamp;
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -50,6 +59,12 @@ pub struct PostTweet<'info> {
     #[account(mut)]
     pub author: Signer<'info>,
     pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct EditTweet<'info> {
+    #[account(mut)]
+    pub tweet: Account<'info, Tweet>,
 }
 
 #[account]
